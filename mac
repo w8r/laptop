@@ -4,59 +4,6 @@ successfully() {
   $* || (echo "failed" 1>&2 && exit 1)
 }
 
-# echo "Checking for SSH key, generating one if it doesn't exist ..."
-#   [[ -f ~/.ssh/id_rsa.pub ]] || ssh-keygen -t rsa
-
-# echo "Copying public key to clipboard. Paste it into your Github account ..."
-#   [[ -f ~/.ssh/id_rsa.pub ]] && cat ~/.ssh/id_rsa.pub | pbcopy
-#   successfully open https://github.com/account/ssh
-
-# echo "Fixing permissions ..."
-#   successfully sudo chown -R `whoami` /usr/local
-
-echo "Installing Homebrew, a good OS X package manager ..."
-  successfully ruby <(curl -fsS https://raw.github.com/mxcl/homebrew/go)
-  successfully brew update
-
-echo "Putting Homebrew location earlier in PATH ..."
-  successfully echo "
-# recommended by brew doctor
-export PATH='/usr/local/bin:$PATH'" >> ~/.bash_profile
-  successfully source ~/.bash_profile
-
-echo "Installing GNU Compiler Collection and dependencies ..."
-  successfully brew tap homebrew/dupes
-  successfully brew install autoconf automake apple-gcc42
-
-echo "Installing libksba, recommended for Ruby 1.9.3 ..."
-  successfully brew install libksba
-
-echo "Installing MySql, a not so good relational database ..."
-  brew install mysql
-  successfully  unset TMPDIR
-  successfully mysql_install_db --verbose --user=`whoami` --basedir="$(brew --prefix mysql)" --datadir=/usr/local/var/mysql --tmpdir=/tmp
-  successfully mkdir -p ~/Library/LaunchAgents
-  successfully cp $(brew --prefix mysql)/homebrew.mxcl.mysql.plist ~/Library/LaunchAgents/
-  successfully launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.mysql.plist
-
-# echo "Installing Postgres, a good open source relational database ..."
-#   successfully brew install postgres --no-python
-
-# echo "Installing ack, a good way to search through files ..."
-#   successfully brew install ack
-
-# echo "Installing tmux, a good way to save project state and switch between projects ..."
-#   successfully brew install tmux
-
-# echo "Installing reattach-to-user-namespace, for copy-paste and RubyMotion compatibility with tmux ..."
-#   successfully brew install reattach-to-user-namespace
-
-echo "Installing ImageMagick, good for cropping and re-sizing images ..."
-  successfully brew install imagemagick
-
-echo "Installing QT, used by Capybara Webkit for headless Javascript integration testing ..."
-  successfully brew install qt
-
 echo "Installing rbenv, Simple Ruby Version Management ..."
   successfully brew install rbenv
   successfully echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile
