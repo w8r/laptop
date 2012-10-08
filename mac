@@ -4,15 +4,15 @@ successfully() {
   $* || (echo "failed" 1>&2 && exit 1)
 }
 
-echo "Checking for SSH key, generating one if it doesn't exist ..."
-  [[ -f ~/.ssh/id_rsa.pub ]] || ssh-keygen -t rsa
+# echo "Checking for SSH key, generating one if it doesn't exist ..."
+#   [[ -f ~/.ssh/id_rsa.pub ]] || ssh-keygen -t rsa
 
-echo "Copying public key to clipboard. Paste it into your Github account ..."
-  [[ -f ~/.ssh/id_rsa.pub ]] && cat ~/.ssh/id_rsa.pub | pbcopy
-  successfully open https://github.com/account/ssh
+# echo "Copying public key to clipboard. Paste it into your Github account ..."
+#   [[ -f ~/.ssh/id_rsa.pub ]] && cat ~/.ssh/id_rsa.pub | pbcopy
+#   successfully open https://github.com/account/ssh
 
-echo "Fixing permissions ..."
-  successfully sudo chown -R `whoami` /usr/local
+# echo "Fixing permissions ..."
+#   successfully sudo chown -R `whoami` /usr/local
 
 echo "Installing Homebrew, a good OS X package manager ..."
   successfully ruby <(curl -fsS https://raw.github.com/mxcl/homebrew/go)
@@ -21,8 +21,8 @@ echo "Installing Homebrew, a good OS X package manager ..."
 echo "Putting Homebrew location earlier in PATH ..."
   successfully echo "
 # recommended by brew doctor
-export PATH='/usr/local/bin:$PATH'" >> ~/.zshenv
-  successfully source ~/.zshenv
+export PATH='/usr/local/bin:$PATH'" >> ~/.bash_profile
+  successfully source ~/.bash_profile
 
 echo "Installing GNU Compiler Collection and dependencies ..."
   successfully brew tap homebrew/dupes
@@ -31,17 +31,25 @@ echo "Installing GNU Compiler Collection and dependencies ..."
 echo "Installing libksba, recommended for Ruby 1.9.3 ..."
   successfully brew install libksba
 
-echo "Installing Postgres, a good open source relational database ..."
-  successfully brew install postgres --no-python
+echo "Installing MySql, a not so good relational database ..."
+  brew install mysql
+  successfully  unset TMPDIR
+  successfully mysql_install_db --verbose --user=`whoami` --basedir="$(brew --prefix mysql)" --datadir=/usr/local/var/mysql --tmpdir=/tmp
+  successfully mkdir -p ~/Library/LaunchAgents
+  successfully cp $(brew --prefix mysql)/homebrew.mxcl.mysql.plist ~/Library/LaunchAgents/
+  successfully launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.mysql.plist
 
-echo "Installing ack, a good way to search through files ..."
-  successfully brew install ack
+# echo "Installing Postgres, a good open source relational database ..."
+#   successfully brew install postgres --no-python
 
-echo "Installing tmux, a good way to save project state and switch between projects ..."
-  successfully brew install tmux
+# echo "Installing ack, a good way to search through files ..."
+#   successfully brew install ack
 
-echo "Installing reattach-to-user-namespace, for copy-paste and RubyMotion compatibility with tmux ..."
-  successfully brew install reattach-to-user-namespace
+# echo "Installing tmux, a good way to save project state and switch between projects ..."
+#   successfully brew install tmux
+
+# echo "Installing reattach-to-user-namespace, for copy-paste and RubyMotion compatibility with tmux ..."
+#   successfully brew install reattach-to-user-namespace
 
 echo "Installing ImageMagick, good for cropping and re-sizing images ..."
   successfully brew install imagemagick
@@ -49,12 +57,24 @@ echo "Installing ImageMagick, good for cropping and re-sizing images ..."
 echo "Installing QT, used by Capybara Webkit for headless Javascript integration testing ..."
   successfully brew install qt
 
-echo "Installing RVM (Ruby Version Manager) and Ruby 1.9.3, which becomes the default ..."
-  successfully curl -L https://get.rvm.io | bash -s -- --version 1.15.10 --ruby
-  successfully echo "
-# RVM
-[[ -s '/Users/`whoami`/.rvm/scripts/rvm' ]] && source '/Users/`whoami`/.rvm/scripts/rvm'" >> ~/.zshenv
-  successfully source ~/.zshenv
+echo "Installing rbenv, Simple Ruby Version Management ..."
+  successfully brew install rbenv
+  successfully echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile
+  successfully echo 'eval "$(rbenv init -)"' >> ~/.bash_profile
+  successfully exec $SHELL
+
+echo "Installing ruby-build - an rbenv plugin that provides an rbenv install ..."
+  successfully brew install ruby-build
+
+echo "Installing Ruby 1.9.3-p194 ..."
+  successfully rbenv install 1.9.3-p194
+  successfully rbenv rehash
+# echo "Installing RVM (Ruby Version Manager) and Ruby 1.9.3, which becomes the default ..."
+#   successfully curl -L https://get.rvm.io | bash -s -- --version 1.15.10 --ruby
+#   successfully echo "
+# # RVM
+# [[ -s '/Users/`whoami`/.rvm/scripts/rvm' ]] && source '/Users/`whoami`/.rvm/scripts/rvm'" >> ~/.zshenv
+#   successfully source ~/.zshenv
 
 echo "Installing Bundler to build gem dependencies ..."
   successfully gem install bundler --no-rdoc --no-ri
@@ -62,14 +82,14 @@ echo "Installing Bundler to build gem dependencies ..."
 echo "Installing Rails to write and run web applications ..."
   successfully gem install rails --no-rdoc --no-ri
 
-echo "Installing the Heroku gem to interact with the http://heroku.com API ..."
-  successfully gem install heroku --no-rdoc --no-ri
+# echo "Installing the Heroku gem to interact with the http://heroku.com API ..."
+#   successfully gem install heroku --no-rdoc --no-ri
 
-echo "Installing the pg gem to talk to Postgres databases ..."
-  successfully gem install pg --no-rdoc --no-ri
+# echo "Installing the pg gem to talk to Postgres databases ..."
+#   successfully gem install pg --no-rdoc --no-ri
 
-echo "Installing the foreman gem for serving your Rails apps in development mode ..."
-  successfully gem install foreman --no-rdoc --no-ri
+# echo "Installing the foreman gem for serving your Rails apps in development mode ..."
+#   successfully gem install foreman --no-rdoc --no-ri
 
-echo "Installing the heroku-config plugin for pulling config variables locally to be used as ENV variables ..."
-  successfully heroku plugins:install git://github.com/ddollar/heroku-config.git
+# echo "Installing the heroku-config plugin for pulling config variables locally to be used as ENV variables ..."
+#   successfully heroku plugins:install git://github.com/ddollar/heroku-config.git
